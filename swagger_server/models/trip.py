@@ -156,7 +156,7 @@ class Trip(Model):
     def start_time(self) -> str:
         """Gets the start_time of this Trip.
 
-        Required Start of the passenger/driver trip  # noqa: E501
+        Required  Start of the passenger/driver trip  # noqa: E501
 
         :return: The start_time of this Trip.
         :rtype: str
@@ -167,7 +167,7 @@ class Trip(Model):
     def start_time(self, start_time: str):
         """Sets the start_time of this Trip.
 
-        Required Start of the passenger/driver trip  # noqa: E501
+        Required  Start of the passenger/driver trip  # noqa: E501
 
         :param start_time: The start_time of this Trip.
         :type start_time: str

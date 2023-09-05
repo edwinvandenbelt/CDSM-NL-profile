@@ -291,7 +291,7 @@ class Event(Model):
     def battery_percent(self) -> int:
         """Gets the battery_percent of this Event.
 
-        Required if Applicable Percent battery charge of vehicle, expressed between 0 and 100  # noqa: E501
+        Required if Applicable  Percent battery charge of vehicle, expressed between 0 and 100  # noqa: E501
 
         :return: The battery_percent of this Event.
         :rtype: int
@@ -302,7 +302,7 @@ class Event(Model):
     def battery_percent(self, battery_percent: int):
         """Sets the battery_percent of this Event.
 
-        Required if Applicable Percent battery charge of vehicle, expressed between 0 and 100  # noqa: E501
+        Required if Applicable  Percent battery charge of vehicle, expressed between 0 and 100  # noqa: E501
 
         :param battery_percent: The battery_percent of this Event.
         :type battery_percent: int
@@ -314,7 +314,7 @@ class Event(Model):
     def fuel_percent(self) -> int:
         """Gets the fuel_percent of this Event.
 
-        Required if Applicable Percent fuel in vehicle, expressed between 0 and 100  # noqa: E501
+        Required if Applicable  Percent fuel in vehicle, expressed between 0 and 100  # noqa: E501
 
         :return: The fuel_percent of this Event.
         :rtype: int
@@ -325,7 +325,7 @@ class Event(Model):
     def fuel_percent(self, fuel_percent: int):
         """Sets the fuel_percent of this Event.
 
-        Required if Applicable Percent fuel in vehicle, expressed between 0 and 100  # noqa: E501
+        Required if Applicable  Percent fuel in vehicle, expressed between 0 and 100  # noqa: E501
 
         :param fuel_percent: The fuel_percent of this Event.
         :type fuel_percent: int

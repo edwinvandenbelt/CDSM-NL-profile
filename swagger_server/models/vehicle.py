@@ -230,7 +230,7 @@ class Vehicle(Model):
     def battery_capacity(self) -> int:
         """Gets the battery_capacity of this Vehicle.
 
-        Required if Available Capacity of battery expressed as milliamp hours (mAh)  # noqa: E501
+        Required if Available  Capacity of battery expressed as milliamp hours (mAh)  # noqa: E501
 
         :return: The battery_capacity of this Vehicle.
         :rtype: int
@@ -241,7 +241,7 @@ class Vehicle(Model):
     def battery_capacity(self, battery_capacity: int):
         """Sets the battery_capacity of this Vehicle.
 
-        Required if Available Capacity of battery expressed as milliamp hours (mAh)  # noqa: E501
+        Required if Available  Capacity of battery expressed as milliamp hours (mAh)  # noqa: E501
 
         :param battery_capacity: The battery_capacity of this Vehicle.
         :type battery_capacity: int
@@ -253,7 +253,7 @@ class Vehicle(Model):
     def fuel_capacity(self) -> int:
         """Gets the fuel_capacity of this Vehicle.
 
-        Required if Available Capacity of fuel tank (liquid, solid, gaseous) expressed in liters  # noqa: E501
+        Required if Available  Capacity of fuel tank (liquid, solid, gaseous) expressed in liters  # noqa: E501
 
         :return: The fuel_capacity of this Vehicle.
         :rtype: int
@@ -264,7 +264,7 @@ class Vehicle(Model):
     def fuel_capacity(self, fuel_capacity: int):
         """Sets the fuel_capacity of this Vehicle.
 
-        Required if Available Capacity of fuel tank (liquid, solid, gaseous) expressed in liters  # noqa: E501
+        Required if Available  Capacity of fuel tank (liquid, solid, gaseous) expressed in liters  # noqa: E501
 
         :param fuel_capacity: The fuel_capacity of this Vehicle.
         :type fuel_capacity: int
@@ -276,7 +276,7 @@ class Vehicle(Model):
     def maximum_speed(self) -> int:
         """Gets the maximum_speed of this Vehicle.
 
-        Required if Available Maximum speed (kph) possible with vehicle under normal, flat incline, smooth surface conditions. Applicable if the device has a built-in or intelligent speed limiter/governor.  # noqa: E501
+        Required if Available  Maximum speed (kph) possible with vehicle under normal, flat incline, smooth surface conditions. Applicable if the device has a built-in or intelligent speed limiter/governor.  # noqa: E501
 
         :return: The maximum_speed of this Vehicle.
         :rtype: int
@@ -287,7 +287,7 @@ class Vehicle(Model):
     def maximum_speed(self, maximum_speed: int):
         """Sets the maximum_speed of this Vehicle.
 
-        Required if Available Maximum speed (kph) possible with vehicle under normal, flat incline, smooth surface conditions. Applicable if the device has a built-in or intelligent speed limiter/governor.  # noqa: E501
+        Required if Available  Maximum speed (kph) possible with vehicle under normal, flat incline, smooth surface conditions. Applicable if the device has a built-in or intelligent speed limiter/governor.  # noqa: E501
 
         :param maximum_speed: The maximum_speed of this Vehicle.
         :type maximum_speed: int

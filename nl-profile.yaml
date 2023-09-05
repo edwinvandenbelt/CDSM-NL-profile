@@ -9,6 +9,9 @@ info:
     name: Open Mobility Foundation
     email: info@openmobilityfoundation.org
 
+security:
+- bearer: [read]
+
 paths:
   /trips/{end_time}:
     parameters:
@@ -192,10 +195,10 @@ components:
           description: See also Stop-based Geographic Data.
         battery_percent:
           type: integer
-          description: Required if Applicable	Percent battery charge of vehicle, expressed between 0 and 100
+          description: Required if Applicable  Percent battery charge of vehicle, expressed between 0 and 100
         fuel_percent:
           type: integer
-          description: Required if Applicable	Percent fuel in vehicle, expressed between 0 and 100
+          description: Required if Applicable  Percent fuel in vehicle, expressed between 0 and 100
 
     vehicles:
       type: object
@@ -237,18 +240,18 @@ components:
           type: array
           items: 
             type: string
-            description: Required	Array of propulsion types; allows multiple values
+            description: Required  Array of propulsion types; allows multiple values
             enum: 
               [human,electric_assist,electric,combustion,combustion_diesel,hybrid,hydrogen_fuel_cell,plug_in_hybrid]
         battery_capacity: 
           type: integer
-          description: Required if Available	Capacity of battery expressed as milliamp hours (mAh)
+          description: Required if Available  Capacity of battery expressed as milliamp hours (mAh)
         fuel_capacity:
           type: integer
-          description: Required if Available	Capacity of fuel tank (liquid, solid, gaseous) expressed in liters
+          description: Required if Available  Capacity of fuel tank (liquid, solid, gaseous) expressed in liters
         maximum_speed:
           type: integer
-          description: Required if Available	Maximum speed (kph) possible with vehicle under normal, flat incline, smooth surface conditions. Applicable if the device has a built-in or intelligent speed limiter/governor.      
+          description: Required if Available  Maximum speed (kph) possible with vehicle under normal, flat incline, smooth surface conditions. Applicable if the device has a built-in or intelligent speed limiter/governor.      
 
     vehicle_type:
       type: string
@@ -279,7 +282,7 @@ components:
         start_time:
           type: string
           format: $date-time
-          description: Required	Start of the passenger/driver trip
+          description: Required  Start of the passenger/driver trip
         end_time:
           type: string
           format: $date-time
@@ -568,3 +571,4 @@ components:
         JSON Web Token ([JWT](https://jwt.io/introduction/)) is RECOMMENDED as the token format.
 
         MDS API producers MAY include any metadata in the JWT they wish that helps to route, log, permission, or debug agency requests, leaving their internal implementation flexible.
+

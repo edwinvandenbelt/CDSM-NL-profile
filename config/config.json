@@ -1,0 +1,4 @@
+{
+    "jwt_secret": "vianova",
+    "allowed_tokens": ["Vianova"]
+}

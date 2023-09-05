@@ -1,0 +1,989 @@
+openapi: 3.0.0
+info:
+  title: Dutch profile for data exchange between shared mobility providers and municipalities.
+  description: Mainly based on MDS 2.0 (OMF). Contains also a GBFS endpoint.
+  contact:
+    name: Open Mobility Foundation
+    url: https://github.com/openmobilityfoundation/mobility-data-specification
+    email: info@openmobilityfoundation.org
+  version: "1.0"
+servers:
+- url: /
+security:
+- bearer:
+  - read
+paths:
+  /trips/{end_time}:
+    get:
+      summary: Query historical trip data.
+      description: Get all trips with an end time occurring within the hour.
+      operationId: trips_end_time_get
+      parameters:
+      - name: end_time
+        in: path
+        description: "A list of the languages/localizations the user would like to\
+          \ see the results in. For user privacy and ease of use on the TO side, this\
+          \ list should be kept as short as possible, ideally just one language tag\
+          \ from the list in operator/information"
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/iso_dayhour'
+      responses:
+        "200":
+          description: Hour has been processed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/trips'
+        "202":
+          description: Hours that are in the past but for which data is not yet available
+        "404":
+          description: Hours that are not yet in the past or hours in which the provider
+            was not operating
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /vehicles:
+    get:
+      summary: Query vehicle data.
+      operationId: vehicles_get
+      responses:
+        "200":
+          description: current vehicle data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/vehicles'
+        "404":
+          description: Vehicle not found.
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /vehicles/status:
+    get:
+      summary: Query vehicle status data. Only provides vehicles with status 'available'
+      operationId: vehicles_status_get
+      responses:
+        "200":
+          description: vehicle status data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/statusses'
+        "404":
+          description: Vehicle not found.
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /geofencing_zones:
+    get:
+      summary: "return the operational area, according to the shared mobility provider"
+      description: The provider must offer the GBFS /geofencing_zones.json file (https://github.com/MobilityData/gbfs/blob/v2.3/gbfs.md#geofencing_zonesjson).
+      operationId: geofencing_zones_get
+      responses:
+        "200":
+          description: geoJSON formatted zones
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/geofencing_zones'
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+components:
+  schemas:
+    statusses:
+      required:
+      - links
+      - vehicles_status
+      - version
+      type: object
+      properties:
+        version:
+          type: string
+        vehicles_status:
+          type: array
+          items:
+            $ref: '#/components/schemas/status'
+        links:
+          $ref: '#/components/schemas/links'
+      example:
+        vehicles_status:
+        - device_id: 3c9604d6-b5ee-11e8-96f8-529269fb1459
+          last_event:
+            fuel_percent: 6
+            event_id: null
+            device_id: null
+            event_types:
+            - agency_drop_off
+            - agency_drop_off
+            battery_percent: 0
+            provider_id: null
+            location:
+              lng: 6.02745618307040320615897144307382404804229736328125
+              lat: 0.80082819046101150206595775671303272247314453125
+            vehicle_state: removed
+            timestamp: timestamp
+            publication_time: publication_time
+          last_telemetry:
+            device_id: null
+            provider_id: null
+            telemetry_id: null
+            location: null
+            journey_id: null
+            trip_ids:
+            - null
+            - null
+            timestamp: timestamp
+          provider_id: null
+        - device_id: 3c9604d6-b5ee-11e8-96f8-529269fb1459
+          last_event:
+            fuel_percent: 6
+            event_id: null
+            device_id: null
+            event_types:
+            - agency_drop_off
+            - agency_drop_off
+            battery_percent: 0
+            provider_id: null
+            location:
+              lng: 6.02745618307040320615897144307382404804229736328125
+              lat: 0.80082819046101150206595775671303272247314453125
+            vehicle_state: removed
+            timestamp: timestamp
+            publication_time: publication_time
+          last_telemetry:
+            device_id: null
+            provider_id: null
+            telemetry_id: null
+            location: null
+            journey_id: null
+            trip_ids:
+            - null
+            - null
+            timestamp: timestamp
+          provider_id: null
+        links:
+          next: next
+          last: last
+          prev: prev
+          first: first
+        version: version
+    status:
+      required:
+      - device_id
+      - last_event
+      - last_telemetry
+      - provider_id
+      type: object
+      properties:
+        device_id:
+          $ref: '#/components/schemas/uuid'
+        provider_id:
+          $ref: '#/components/schemas/uuid'
+        last_event:
+          $ref: '#/components/schemas/event'
+        last_telemetry:
+          $ref: '#/components/schemas/telemetry'
+      example:
+        device_id: 3c9604d6-b5ee-11e8-96f8-529269fb1459
+        last_event:
+          fuel_percent: 6
+          event_id: null
+          device_id: null
+          event_types:
+          - agency_drop_off
+          - agency_drop_off
+          battery_percent: 0
+          provider_id: null
+          location:
+            lng: 6.02745618307040320615897144307382404804229736328125
+            lat: 0.80082819046101150206595775671303272247314453125
+          vehicle_state: removed
+          timestamp: timestamp
+          publication_time: publication_time
+        last_telemetry:
+          device_id: null
+          provider_id: null
+          telemetry_id: null
+          location: null
+          journey_id: null
+          trip_ids:
+          - null
+          - null
+          timestamp: timestamp
+        provider_id: null
+    telemetry:
+      required:
+      - device_id
+      - journey_id
+      - location
+      - provider_id
+      - telemetry_id
+      - timestamp
+      - trip_ids
+      type: object
+      properties:
+        device_id:
+          $ref: '#/components/schemas/uuid'
+        provider_id:
+          $ref: '#/components/schemas/uuid'
+        telemetry_id:
+          $ref: '#/components/schemas/uuid'
+        timestamp:
+          type: string
+          format: $date-time
+        trip_ids:
+          type: array
+          description: "If telemetry occurred during a trip, the ID of the trip(s).\
+            \ If not in a trip, null. (in NL profile, this must always be null)"
+          items:
+            $ref: '#/components/schemas/uuid'
+        journey_id:
+          $ref: '#/components/schemas/uuid'
+        location:
+          $ref: '#/components/schemas/gps'
+      example:
+        device_id: null
+        provider_id: null
+        telemetry_id: null
+        location: null
+        journey_id: null
+        trip_ids:
+        - null
+        - null
+        timestamp: timestamp
+    event:
+      required:
+      - device_id
+      - event_id
+      - event_types
+      - location
+      - provider_id
+      - timestamp
+      - vehicle_state
+      type: object
+      properties:
+        device_id:
+          $ref: '#/components/schemas/uuid'
+        provider_id:
+          $ref: '#/components/schemas/uuid'
+        event_id:
+          $ref: '#/components/schemas/uuid'
+        vehicle_state:
+          type: string
+          description: "See vehicle state table (in NL profile, it should be 'available')"
+          enum:
+          - removed
+          - available
+          - non_operational
+          - reserved
+          - on_trip
+          - stopped
+          - non_contactable
+          - missing
+          - elsewhere
+        event_types:
+          type: array
+          description: "Vehicle event types for state change, with allowable values\
+            \ determined by vehicle_state"
+          items:
+            type: string
+            enum:
+            - agency_drop_off
+            - agency_pick_up
+            - battery_charged
+            - battery_low
+            - changed_geographies
+            - charging_start
+            - charging_end
+            - comms_lost
+            - comms_restored
+            - compliance_pick_up
+            - customer_cancellation
+            - decommissioned
+            - driver_cancellation
+            - fueling_start
+            - fueling_end
+            - located
+            - maintenance
+            - maintenance_pick_up
+            - maintenance_end
+            - not_located
+            - off_hours
+            - on_hours
+            - order_drop_off
+            - order_pick_up
+            - provider_cancellation
+            - provider_drop_off
+            - rebalance_pick_up
+            - remote_start
+            - remote_end
+            - reservation_cancel
+            - reservation_start
+            - reservation_stop
+            - system_resume
+            - system_suspend
+            - trip_cancel
+            - trip_end
+            - trip_enter_jurisdiction
+            - trip_leave_jurisdiction
+            - trip_start
+            - trip_pause
+            - trip_resume
+            - unspecified
+        timestamp:
+          type: string
+          description: Date/time that event occurred at. See Event Times
+          format: $date-time
+        publication_time:
+          type: string
+          description: Date/time that event became available through the status changes
+            endpoint
+          format: $date-time
+        location:
+          $ref: '#/components/schemas/gps'
+        battery_percent:
+          type: integer
+          description: "Required if Applicable  Percent battery charge of vehicle,\
+            \ expressed between 0 and 100"
+        fuel_percent:
+          type: integer
+          description: "Required if Applicable  Percent fuel in vehicle, expressed\
+            \ between 0 and 100"
+      example:
+        fuel_percent: 6
+        event_id: null
+        device_id: null
+        event_types:
+        - agency_drop_off
+        - agency_drop_off
+        battery_percent: 0
+        provider_id: null
+        location:
+          lng: 6.02745618307040320615897144307382404804229736328125
+          lat: 0.80082819046101150206595775671303272247314453125
+        vehicle_state: removed
+        timestamp: timestamp
+        publication_time: publication_time
+    vehicles:
+      type: object
+      properties:
+        version:
+          type: string
+        vehicles:
+          type: array
+          items:
+            $ref: '#/components/schemas/vehicle'
+        links:
+          $ref: '#/components/schemas/links'
+      example:
+        vehicles:
+        - device_id: 3c9604d6-b5ee-11e8-96f8-529269fb1459
+          fuel_capacity: 6
+          provider_id: null
+          vehicle_type: bicycle
+          data_provider_id: null
+          battery_capacity: 0
+          vehicle_id: vehicle_id
+          maximum_speed: 1
+          propulsion_types:
+          - human
+          - human
+        - device_id: 3c9604d6-b5ee-11e8-96f8-529269fb1459
+          fuel_capacity: 6
+          provider_id: null
+          vehicle_type: bicycle
+          data_provider_id: null
+          battery_capacity: 0
+          vehicle_id: vehicle_id
+          maximum_speed: 1
+          propulsion_types:
+          - human
+          - human
+        links:
+          next: next
+          last: last
+          prev: prev
+          first: first
+        version: version
+    vehicle:
+      required:
+      - device_id
+      - propulsion_types
+      - provider_id
+      - vehicle_id
+      - vehicle_type
+      type: object
+      properties:
+        device_id:
+          $ref: '#/components/schemas/uuid'
+        provider_id:
+          $ref: '#/components/schemas/uuid'
+        data_provider_id:
+          $ref: '#/components/schemas/uuid'
+        vehicle_id:
+          type: string
+          description: "A unique vehicle identifier (visible code, license plate,\
+            \ etc), visible on the vehicle itself"
+        vehicle_type:
+          $ref: '#/components/schemas/vehicle_type'
+        propulsion_types:
+          type: array
+          items:
+            type: string
+            description: Required  Array of propulsion types; allows multiple values
+            enum:
+            - human
+            - electric_assist
+            - electric
+            - combustion
+            - combustion_diesel
+            - hybrid
+            - hydrogen_fuel_cell
+            - plug_in_hybrid
+        battery_capacity:
+          type: integer
+          description: Required if Available  Capacity of battery expressed as milliamp
+            hours (mAh)
+        fuel_capacity:
+          type: integer
+          description: "Required if Available  Capacity of fuel tank (liquid, solid,\
+            \ gaseous) expressed in liters"
+        maximum_speed:
+          type: integer
+          description: "Required if Available  Maximum speed (kph) possible with vehicle\
+            \ under normal, flat incline, smooth surface conditions. Applicable if\
+            \ the device has a built-in or intelligent speed limiter/governor."
+      example:
+        device_id: 3c9604d6-b5ee-11e8-96f8-529269fb1459
+        fuel_capacity: 6
+        provider_id: null
+        vehicle_type: bicycle
+        data_provider_id: null
+        battery_capacity: 0
+        vehicle_id: vehicle_id
+        maximum_speed: 1
+        propulsion_types:
+        - human
+        - human
+    vehicle_type:
+      type: string
+      enum:
+      - bicycle
+      - bus
+      - cargo_bicycle
+      - car
+      - delivery_robot
+      - moped
+      - motorcycle
+      - scooter_standing
+      - scooter_seated
+      - truck
+      - other
+    trip:
+      required:
+      - device_id
+      - distance
+      - duration
+      - end_location
+      - end_time
+      - provider_id
+      - start_location
+      - start_time
+      - trip_id
+      type: object
+      properties:
+        provider_id:
+          $ref: '#/components/schemas/uuid'
+        device_id:
+          $ref: '#/components/schemas/uuid'
+        trip_id:
+          $ref: '#/components/schemas/uuid'
+        start_time:
+          type: string
+          description: Required  Start of the passenger/driver trip
+          format: $date-time
+        end_time:
+          type: string
+          description: End of the passenger/driver trip
+          format: $date-time
+        start_location:
+          $ref: '#/components/schemas/gps'
+        end_location:
+          $ref: '#/components/schemas/gps'
+        duration:
+          type: number
+          description: "Time, in Seconds"
+        distance:
+          type: number
+          description: "Trip Distance, in Meters"
+      example:
+        duration: 1.46581298050294517310021547018550336360931396484375
+        start_time: start_time
+        start_location:
+          lng: 6.02745618307040320615897144307382404804229736328125
+          lat: 0.80082819046101150206595775671303272247314453125
+        trip_id: null
+        device_id: null
+        distance: 5.962133916683182377482808078639209270477294921875
+        end_time: end_time
+        provider_id: 3c9604d6-b5ee-11e8-96f8-529269fb1459
+        end_location: null
+    gps:
+      required:
+      - lat
+      - lng
+      type: object
+      properties:
+        lat:
+          type: number
+          description: Latitude of the location
+        lng:
+          type: number
+          description: Longitude of the location
+      example:
+        lng: 6.02745618307040320615897144307382404804229736328125
+        lat: 0.80082819046101150206595775671303272247314453125
+    trips:
+      type: object
+      properties:
+        version:
+          type: string
+        trips:
+          $ref: '#/components/schemas/trips_trips'
+      example:
+        trips:
+          trips:
+          - duration: 1.46581298050294517310021547018550336360931396484375
+            start_time: start_time
+            start_location:
+              lng: 6.02745618307040320615897144307382404804229736328125
+              lat: 0.80082819046101150206595775671303272247314453125
+            trip_id: null
+            device_id: null
+            distance: 5.962133916683182377482808078639209270477294921875
+            end_time: end_time
+            provider_id: 3c9604d6-b5ee-11e8-96f8-529269fb1459
+            end_location: null
+          - duration: 1.46581298050294517310021547018550336360931396484375
+            start_time: start_time
+            start_location:
+              lng: 6.02745618307040320615897144307382404804229736328125
+              lat: 0.80082819046101150206595775671303272247314453125
+            trip_id: null
+            device_id: null
+            distance: 5.962133916683182377482808078639209270477294921875
+            end_time: end_time
+            provider_id: 3c9604d6-b5ee-11e8-96f8-529269fb1459
+            end_location: null
+          version: 2.0.0
+        version: version
+    geofencing_zones:
+      type: object
+      properties:
+        last_updated:
+          type: number
+        ttl:
+          type: number
+        version:
+          type: string
+          default: "2.3"
+        data:
+          $ref: '#/components/schemas/geofencing_zones_data'
+      example:
+        last_updated: 0.80082819046101150206595775671303272247314453125
+        data:
+          geofencing_zones:
+            features:
+            - geometry: ""
+              id: 1
+              type: Feature
+              properties:
+                name: name
+                start: start
+                end: end
+                rules:
+                - vehicle_type_id: vehicle_type_id
+                  ride_allowed: false
+                  ride_end_allowed: true
+                - vehicle_type_id: vehicle_type_id
+                  ride_allowed: false
+                  ride_end_allowed: true
+            - geometry: ""
+              id: 1
+              type: Feature
+              properties:
+                name: name
+                start: start
+                end: end
+                rules:
+                - vehicle_type_id: vehicle_type_id
+                  ride_allowed: false
+                  ride_end_allowed: true
+                - vehicle_type_id: vehicle_type_id
+                  ride_allowed: false
+                  ride_end_allowed: true
+            type: FeatureCollection
+        ttl: 6.02745618307040320615897144307382404804229736328125
+        version: "2.3"
+    geometry:
+      required:
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: the geometry type
+          enum:
+          - point
+          - lineString
+          - polygon
+          - multiPoint
+          - multiLineString
+          - multiPolygon
+      description: GeoJSon geometry
+      externalDocs:
+        url: http://geojson.org/geojson-spec.html#geometry-objects
+    point3D:
+      maxItems: 3
+      minItems: 2
+      type: array
+      description: Point in 3D space
+      externalDocs:
+        url: http://geojson.org/geojson-spec.html#id2
+      items:
+        type: number
+    point:
+      type: object
+      description: GeoJSon geometry
+      externalDocs:
+        url: http://geojson.org/geojson-spec.html#id2
+      allOf:
+      - $ref: '#/components/schemas/geometry'
+      - properties:
+          coordinates:
+            $ref: '#/components/schemas/point3D'
+    lineString:
+      type: object
+      description: GeoJSon geometry
+      externalDocs:
+        url: http://geojson.org/geojson-spec.html#id3
+      allOf:
+      - $ref: '#/components/schemas/geometry'
+      - properties:
+          coordinates:
+            type: array
+            items:
+              $ref: '#/components/schemas/point3D'
+    polygon:
+      type: object
+      description: GeoJSon geometry
+      externalDocs:
+        url: http://geojson.org/geojson-spec.html#id4
+      allOf:
+      - $ref: '#/components/schemas/geometry'
+      - properties:
+          coordinates:
+            type: array
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/point3D'
+    multiPoint:
+      type: object
+      description: GeoJSon geometry
+      externalDocs:
+        url: http://geojson.org/geojson-spec.html#id5
+      allOf:
+      - $ref: '#/components/schemas/geometry'
+      - properties:
+          coordinates:
+            type: array
+            items:
+              $ref: '#/components/schemas/point3D'
+    multiLineString:
+      type: object
+      description: GeoJSon geometry
+      externalDocs:
+        url: http://geojson.org/geojson-spec.html#id6
+      allOf:
+      - $ref: '#/components/schemas/geometry'
+      - properties:
+          coordinates:
+            type: array
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/point3D'
+    multiPolygon:
+      type: object
+      description: GeoJSon geometry
+      externalDocs:
+        url: http://geojson.org/geojson-spec.html#id6
+      allOf:
+      - $ref: '#/components/schemas/geometry'
+      - properties:
+          coordinates:
+            type: array
+            items:
+              type: array
+              items:
+                type: array
+                items:
+                  $ref: '#/components/schemas/point3D'
+    feature:
+      required:
+      - geometry
+      - id
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - Feature
+        id:
+          type: integer
+        geometry:
+          discriminator:
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/point'
+          - $ref: '#/components/schemas/lineString'
+          - $ref: '#/components/schemas/polygon'
+          - $ref: '#/components/schemas/multiPoint'
+          - $ref: '#/components/schemas/multiLineString'
+          - $ref: '#/components/schemas/multiPolygon'
+        properties:
+          $ref: '#/components/schemas/featureProperties'
+      description: GeoJSon Feature
+      example:
+        geometry: ""
+        id: 1
+        type: Feature
+        properties:
+          name: name
+          start: start
+          end: end
+          rules:
+          - vehicle_type_id: vehicle_type_id
+            ride_allowed: false
+            ride_end_allowed: true
+          - vehicle_type_id: vehicle_type_id
+            ride_allowed: false
+            ride_end_allowed: true
+      externalDocs:
+        url: https://tools.ietf.org/html/rfc7946#section-3.2
+    featureProperties:
+      type: object
+      properties:
+        name:
+          type: string
+        start:
+          type: string
+          format: $date-time
+        end:
+          type: string
+          format: $date-time
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/rule'
+      example:
+        name: name
+        start: start
+        end: end
+        rules:
+        - vehicle_type_id: vehicle_type_id
+          ride_allowed: false
+          ride_end_allowed: true
+        - vehicle_type_id: vehicle_type_id
+          ride_allowed: false
+          ride_end_allowed: true
+    rule:
+      type: object
+      properties:
+        vehicle_type_id:
+          type: string
+        ride_allowed:
+          type: boolean
+          default: false
+        ride_end_allowed:
+          type: boolean
+          default: true
+      example:
+        vehicle_type_id: vehicle_type_id
+        ride_allowed: false
+        ride_end_allowed: true
+    featureCollection:
+      required:
+      - features
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - FeatureCollection
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/feature'
+      description: GeoJSon Feature collection
+      example:
+        features:
+        - geometry: ""
+          id: 1
+          type: Feature
+          properties:
+            name: name
+            start: start
+            end: end
+            rules:
+            - vehicle_type_id: vehicle_type_id
+              ride_allowed: false
+              ride_end_allowed: true
+            - vehicle_type_id: vehicle_type_id
+              ride_allowed: false
+              ride_end_allowed: true
+        - geometry: ""
+          id: 1
+          type: Feature
+          properties:
+            name: name
+            start: start
+            end: end
+            rules:
+            - vehicle_type_id: vehicle_type_id
+              ride_allowed: false
+              ride_end_allowed: true
+            - vehicle_type_id: vehicle_type_id
+              ride_allowed: false
+              ride_end_allowed: true
+        type: FeatureCollection
+      externalDocs:
+        url: https://tools.ietf.org/html/rfc7946#section-3.3
+    links:
+      type: object
+      properties:
+        first:
+          type: string
+          format: URI
+        last:
+          type: string
+          format: URI
+        prev:
+          type: string
+          format: URI
+        next:
+          type: string
+          format: URI
+      example:
+        next: next
+        last: last
+        prev: prev
+        first: first
+    uuid:
+      pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+      type: string
+      description: A UUID used to uniquely identity an object.
+      example: 3c9604d6-b5ee-11e8-96f8-529269fb1459
+    iso_dayhour:
+      pattern: "^(201[89]|20[2-9]\\d|2[1-9]\\d{2}|[3-9]\\d{3})-(0[1-9]|1[02])-([12]\\\
+        d|0[1-9]|3[01])T([0-2][0-3]|[01]\\d)$"
+      type: string
+      description: An ISO 8601 extended datetime representing an UTC hour between
+        00 and 23 `YYYY-MM-DDTHH`; valid for dates in 2018 and later.
+      example: 2023-12-31T23
+    trips_trips:
+      type: object
+      properties:
+        version:
+          type: string
+          default: 2.0.0
+        trips:
+          type: array
+          items:
+            $ref: '#/components/schemas/trip'
+      example:
+        trips:
+        - duration: 1.46581298050294517310021547018550336360931396484375
+          start_time: start_time
+          start_location:
+            lng: 6.02745618307040320615897144307382404804229736328125
+            lat: 0.80082819046101150206595775671303272247314453125
+          trip_id: null
+          device_id: null
+          distance: 5.962133916683182377482808078639209270477294921875
+          end_time: end_time
+          provider_id: 3c9604d6-b5ee-11e8-96f8-529269fb1459
+          end_location: null
+        - duration: 1.46581298050294517310021547018550336360931396484375
+          start_time: start_time
+          start_location:
+            lng: 6.02745618307040320615897144307382404804229736328125
+            lat: 0.80082819046101150206595775671303272247314453125
+          trip_id: null
+          device_id: null
+          distance: 5.962133916683182377482808078639209270477294921875
+          end_time: end_time
+          provider_id: 3c9604d6-b5ee-11e8-96f8-529269fb1459
+          end_location: null
+        version: 2.0.0
+    geofencing_zones_data:
+      type: object
+      properties:
+        geofencing_zones:
+          $ref: '#/components/schemas/featureCollection'
+      example:
+        geofencing_zones:
+          features:
+          - geometry: ""
+            id: 1
+            type: Feature
+            properties:
+              name: name
+              start: start
+              end: end
+              rules:
+              - vehicle_type_id: vehicle_type_id
+                ride_allowed: false
+                ride_end_allowed: true
+              - vehicle_type_id: vehicle_type_id
+                ride_allowed: false
+                ride_end_allowed: true
+          - geometry: ""
+            id: 1
+            type: Feature
+            properties:
+              name: name
+              start: start
+              end: end
+              rules:
+              - vehicle_type_id: vehicle_type_id
+                ride_allowed: false
+                ride_end_allowed: true
+              - vehicle_type_id: vehicle_type_id
+                ride_allowed: false
+                ride_end_allowed: true
+          type: FeatureCollection
+  parameters:
+    end_time:
+      name: end_time
+      in: path
+      description: "A list of the languages/localizations the user would like to see\
+        \ the results in. For user privacy and ease of use on the TO side, this list\
+        \ should be kept as short as possible, ideally just one language tag from\
+        \ the list in operator/information"
+      required: true
+      style: simple
+      explode: false
+      schema:
+        $ref: '#/components/schemas/iso_dayhour'
+  securitySchemes:
+    bearer:
+      type: http
+      description: |-
+        All MDS Provider, Agency, and Metrics APIs require authentication. If implementing MDS Policy, Geography, and/or Jurisdiction APIs and endpoints, an agency must make them unauthenticated and public.
+
+        JSON Web Token ([JWT](https://jwt.io/introduction/)) is RECOMMENDED as the token format.
+
+        MDS API producers MAY include any metadata in the JWT they wish that helps to route, log, permission, or debug agency requests, leaving their internal implementation flexible.
+      scheme: bearer
+      x-bearerInfoFunc: swagger_server.controllers.authorization_controller.check_bearer
+
