@@ -1,5 +1,5 @@
 import connexion
-import six
+import json
 
 from swagger_server.models.geofencing_zones import GeofencingZones  # noqa: E501
 from swagger_server.models.iso_dayhour import IsoDayhour  # noqa: E501
@@ -7,6 +7,8 @@ from swagger_server.models.statusses import Statusses  # noqa: E501
 from swagger_server.models.trips import Trips  # noqa: E501
 from swagger_server.models.vehicles import Vehicles  # noqa: E501
 from swagger_server import util
+
+from admin.import_controller import ImportController
 
 
 def geofencing_zones_get():  # noqa: E501
@@ -36,15 +38,20 @@ def trips_end_time_get(end_time):  # noqa: E501
 
 
 def vehicles_get():  # noqa: E501
-    """Query vehicle data.
 
-     # noqa: E501
+    if 'token_info' not in connexion.context:
+        return {}
 
-
-    :rtype: Vehicles
-    """
-    return 'do some magic!'
-
+    payload = connexion.context['token_info']
+    if payload == None:
+        return {}
+    elif payload['municipality'] in ImportController.vehicle_json:
+        
+        municipality = payload['municipality']
+        if municipality in ImportController.vehicle_json:
+            return ImportController.vehicle_json[municipality]
+    
+    return {} 
 
 def vehicles_status_get():  # noqa: E501
     """Query vehicle status data. Only provides vehicles with status &#x27;available&#x27;

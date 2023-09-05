@@ -8,7 +8,9 @@ from swagger_server import encoder
 from admin.import_controller import ImportController
 from admin.clear_controller import ClearController
 
-FUNCTIONS_ROUTES = [ {"url": "admin/import", "func": ImportController().import_all},
+IMPORT_CONTROLLER = ImportController()
+
+FUNCTIONS_ROUTES = [ {"url": "admin/import", "func": IMPORT_CONTROLLER.import_all},
                      {"url": "admin/clear", "func": ClearController().clear} 
                     ]
 
@@ -27,6 +29,9 @@ def main():
                         endpoint=func['func'].__name__,
                         view_func=create_view_func(func['func']),
                         methods=["GET"])
+        
+    IMPORT_CONTROLLER.import_all()
+    
     app.run(port=8080)
 
 if __name__ == '__main__':

@@ -50,9 +50,13 @@ class ImportController():
         vehicle.vehicle_id = parts[2]
         vehicle.vehicle_type = parts[3]
         vehicle.propulsion_types = parts[4].split(',')
-        vehicle.battery_capacity = parts[5]
-        vehicle.fuel_capacity = parts[6]
-        vehicle.maximum_speed = parts[7]
+        
+        if int(parts[5]) > 0:
+            vehicle.battery_capacity = int(parts[5])
+        if int(parts[6]) > 0:
+            vehicle.fuel_capacity = parts[6]
+        if int(parts[7]) > 0:
+            vehicle.maximum_speed = parts[7]
         
         return vehicle, parts[8].strip()
     

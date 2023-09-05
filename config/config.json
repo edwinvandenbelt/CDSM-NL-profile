@@ -1,5 +1,5 @@
 {
     "jwt_secret": "vianova",
-    "allowed_tokens": ["Vianova"],
+    "allowed_tokens": ["Vianova", "markelo"],
     "filename_vehicles": "import/vehicles.csv"
 }
