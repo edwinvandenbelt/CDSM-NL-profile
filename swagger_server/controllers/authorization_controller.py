@@ -5,6 +5,9 @@ from support.config_util import ConfigUtil as config
 """
 controller generated to handled auth operation described at:
 https://connexion.readthedocs.io/en/latest/security.html
+
+Generate tokens using
+https://jwt.io/#debugger-io
 """
 def check_bearer(token):
     try:

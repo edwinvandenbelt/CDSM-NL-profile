@@ -1,6 +1,6 @@
 import unittest
-from controllers.authorization_controller import check_bearer
 from unittest.mock import patch
+from swagger_server.controllers.authorization_controller import check_bearer
 
 class TestAuthorizationController(unittest.TestCase):
 
