@@ -3,17 +3,24 @@ import connexion
 from swagger_server.models.iso_dayhour import IsoDayhour
 from admin.vehicle_import_controller import VehicleImportController
 from admin.status_import_controller import VehicleStatusImportController
+from admin.area_import_controller import AreaImportController
 
 
 def geofencing_zones_get():  # noqa: E501
-    """return the operational area, according to the shared mobility provider
 
-    The provider must offer the GBFS /geofencing_zones.json file (https://github.com/MobilityData/gbfs/blob/v2.3/gbfs.md#geofencing_zonesjson). # noqa: E501
+    if 'token_info' not in connexion.context:
+        return {}
 
-
-    :rtype: GeofencingZones
-    """
-    return 'do some magic!'
+    payload = connexion.context['token_info']
+    if payload == None:
+        return {}
+    elif payload['municipality'] in AreaImportController.area_json:
+        
+        municipality = payload['municipality']
+        if municipality in AreaImportController.area_json:
+            return AreaImportController.area_json[municipality]
+    
+    return {} 
 
 
 def trips_end_time_get(end_time):  # noqa: E501
