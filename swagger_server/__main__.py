@@ -11,7 +11,11 @@ from admin.clear_controller import ClearController
 IMPORT_CONTROLLER = ImportController()
 
 FUNCTIONS_ROUTES = [ {"url": "admin/import", "func": IMPORT_CONTROLLER.import_all},
-                     {"url": "admin/clear", "func": ClearController().clear} 
+                     {"url": "admin/import/vehicles", "func": IMPORT_CONTROLLER.import_vehicles},
+                     {"url": "admin/import/statusses", "func": IMPORT_CONTROLLER.import_statusses},
+                     {"url": "admin/import/areas", "func": IMPORT_CONTROLLER.import_areas},
+                     {"url": "admin/import/trips", "func": IMPORT_CONTROLLER.import_trip},
+                     {"url": "admin/clear", "func": ClearController(IMPORT_CONTROLLER).clear} 
                     ]
 
 def create_view_func(func):
@@ -36,3 +40,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

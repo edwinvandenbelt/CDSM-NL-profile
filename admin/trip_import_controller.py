@@ -1,4 +1,6 @@
 import os
+
+from datetime import date, timedelta
 from support.config_util import ConfigUtil as config
 from swagger_server.models.trip import Trip
 from swagger_server.models.trips import Trips
@@ -78,3 +80,18 @@ class TripImportController():
     def to_gps(self, part):
         gps = part.split(',')
         return Gps(lat=float(gps[0]), lng=float(gps[1]))
+    
+    def remove_old_entries(self, days):
+
+        limit = date.today() - timedelta(days=days)
+        limit = limit.strftime("%Y-%m-%dT%H")
+
+        for municipality in self.trip_json:
+            to_clear = list()
+            for hour in self.trip_json[municipality]:
+                if hour < limit:
+                    to_clear.append(hour)
+
+            for hour in to_clear:
+                self.trip_json[municipality].pop(hour)
+        

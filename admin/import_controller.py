@@ -24,3 +24,15 @@ class ImportController():
         report['trips'] = self.trip_import_controller.import_trip()
 
         return report
+
+    def import_vehicles(self):
+        return self.vehicle_import_controller.import_vehicles()
+    
+    def import_statusses(self):
+        return self.status_import_controller.import_vehicle_statusses()
+    
+    def import_areas(self):
+        return self.area_import_controller.import_area()
+    
+    def import_trip(self):
+        return self.trip_import_controller.import_trip()
