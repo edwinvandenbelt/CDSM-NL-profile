@@ -1,9 +1,9 @@
 {
     "jwt_secret": "vianova",
     "allowed_tokens": ["Vianova", "markelo"],
-    "filename_vehicles": "import/vehicles.csv",
-    "filename_vehicle_status": "import/vehicle_status.csv",
-    "filenames_areas": [{ "municipality": "markelo", "file": "import/operational_area_markelo.geojson" }],
-    "directoryname_trips": "import/",
+    "filename_vehicles": "./import/vehicles.csv",
+    "filename_vehicle_status": "./import/vehicle_status.csv",
+    "filenames_areas": [{ "municipality": "markelo", "file": "./import/operational_area_markelo.geojson" }],
+    "directoryname_trips": "./import/",
     "trip_retention_days": 1
 }
