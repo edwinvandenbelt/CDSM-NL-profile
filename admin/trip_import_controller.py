@@ -21,15 +21,15 @@ class TripImportController():
         files_processed = []
         for file in os.listdir(dir):
             if file.startswith("trip") and file.endswith( ".csv"):
-                errors[file] = self.read_all(dir + file)
+                errors[file] = self.read_all(dir, file)
                 files_processed.append(file)
         
         return files_processed, errors
 
-    def read_all(self, file):
+    def read_all(self, dir, file):
         errors = []
         try:
-            with open(file, "r") as csv_file:
+            with open(dir + file, "r") as csv_file:
                 file_parts = file.split('.') # trips.YYYY-MM-DDTHH.csv
                 time = file_parts[1]
                 lines = csv_file.readlines()
