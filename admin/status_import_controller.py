@@ -21,11 +21,12 @@ class VehicleStatusImportController():
         new_statusses: dict() = {}
 
         try:
+            provider_id = config.read_config_value('provider_id')
             with open(file, "r") as csv_file:
                 lines = csv_file.readlines()
                 for line in lines:
-                    if line != None and line != "":
-                        vehicle_status, municipality = self.convert_to_vehicle_status(line)
+                    if line != None and line != "" and not line.startswith("device_id"):
+                        vehicle_status, municipality = self.convert_to_vehicle_status(line, provider_id)
 
                         if municipality not in new_statusses:
                             new_statusses[municipality] = Statusses(version="2.0", vehicles_status=list())
@@ -37,44 +38,39 @@ class VehicleStatusImportController():
             print("An exception occurred:", e)
             raise e
 
-    def convert_to_vehicle_status(self,line):
+    def convert_to_vehicle_status(self,line,provider_id):
 
         parts = line.split(';')
-        # device_id;provider_id;event_id;vehicle_state;event_types;timestamp;location;battery_percent;fuel_percent;telemetry_id;timestamp;trip_ids;journey_id;location;municipality
+        # device_id;event_id;vehicle_status;timestamp;location;municipality
 
         status = Status()
         status.device_id = parts[0] 
-        status.provider_id = parts[1]
+        status.provider_id = provider_id
        
-        status.last_event = self.convert_to_event(parts)
-        status.last_telemetry = self.convert_to_telemetry(parts)
+        status.last_event = self.convert_to_event(parts, provider_id)
+        status.last_telemetry = self.convert_to_telemetry(parts, provider_id)
         
-        return status, parts[14].strip()
+        return status, parts[5].strip()
     
-    def convert_to_event(self, parts):
+    def convert_to_event(self, parts, provider_id):
+        
+        # device_id;event_id;vehicle_status;timestamp;location;municipality
         event = Event()
         event.device_id = parts[0]
-        event.provider_id = parts[1]
-        event.event_id = parts[2]
-        event.vehicle_state = parts[3]
-        event.event_types = parts[4].split(',')
-        event.timestamp = int(parts[5])
-        event.location = self.to_gps(parts[6])
-        if int(parts[7]) > 0:
-            event.battery_percent = int(parts[7])
-        if int(parts[8]) > 0:
-            event.fuel_percent = int(parts[8])
+        event.provider_id = provider_id
+        event.event_id = parts[1]
+        event.vehicle_state = parts[2]
+        event.timestamp = int(parts[3])
+        event.location = self.to_gps(parts[4])
         return event
 
-    def convert_to_telemetry(self, parts):
+    def convert_to_telemetry(self, parts, provider_id):
         telemetry = Telemetry()
         telemetry.device_id = parts[0]
-        telemetry.provider_id = parts[1]
-        telemetry.telemetry_id = parts[9]
-        telemetry.timestamp = int(parts[10])
-        #telemetry.trip_ids = None
-        #telemetry.journey_id = None
-        telemetry.location = self.to_gps(parts[13])
+        telemetry.provider_id = provider_id
+        telemetry.telemetry_id = parts[1]
+        telemetry.timestamp = int(parts[3])
+        telemetry.location = self.to_gps(parts[4])
         return telemetry
     
     def to_gps(self, part):

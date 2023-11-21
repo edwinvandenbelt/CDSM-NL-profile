@@ -29,13 +29,17 @@ class TripImportController():
     def read_all(self, dir, file):
         errors = []
         try:
+            provider_id = config.read_config_value('provider_id')
+
             with open(dir + file, "r") as csv_file:
                 file_parts = file.split('.') # trips.YYYY-MM-DDTHH.csv
                 time = file_parts[1]
                 lines = csv_file.readlines()
                 for line in lines:
-                    if line != None and line != "":    
+                    if line != None and line != "" and not line.startswith("device_id"):    
                         municipality, trip, found_errors = self.convert_to_trip(line)
+                        trip.provider_id = provider_id
+
                         if found_errors != None:
                             errors.append(found_errors)
 
@@ -59,21 +63,20 @@ class TripImportController():
 
     def convert_to_trip(self,line):
         try:
-            # device_id;provider_id;trip_id;start_time;end_time;start_location;end_location;duration;distance;municipality
+            # device_id;trip_id;start_time;end_time;start_location;end_location;duration;distance;municipality
             parts = line.split(';')
 
             trip = Trip()
             trip.device_id = parts[0] 
-            trip.provider_id = parts[1]
-            trip.trip_id = parts[2]
-            trip.start_time = int(parts[3])
-            trip.end_time = int(parts[4])
-            trip.start_location = self.to_gps(parts[5])
-            trip.end_location = self.to_gps(parts[6])
-            trip.duration = int(parts[7])
-            trip.distance = int(parts[8])
+            trip.trip_id = parts[1]
+            trip.start_time = int(parts[2])
+            trip.end_time = int(parts[3])
+            trip.start_location = self.to_gps(parts[4])
+            trip.end_location = self.to_gps(parts[5])
+            trip.duration = int(parts[6])
+            trip.distance = int(parts[7])
 
-            return parts[9].strip(), trip, None
+            return parts[8].strip(), trip, None
         except Exception as e:
             return None, None, str(e) + ' line: ' + line
     

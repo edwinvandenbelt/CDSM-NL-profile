@@ -5,5 +5,6 @@
     "filename_vehicle_status": "./import/vehicle_status.csv",
     "filenames_areas": [{ "municipality": "markelo", "file": "./import/operational_area_markelo.geojson" }],
     "directoryname_trips": "./import/",
-    "trip_retention_days": 1
+    "trip_retention_days": 1, 
+    "provider_id": "02ca099c-3a81-40fb-8d72-3c40c29b2121"
 }

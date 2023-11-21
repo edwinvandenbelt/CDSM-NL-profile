@@ -19,11 +19,14 @@ class VehicleImportController():
         new_vehicles: dict() = {}
 
         try:
+            provider_id = config.read_config_value('provider_id')
+
             with open(file, "r") as csv_file:
                 lines = csv_file.readlines()
                 for line in lines:
-                    if line != None and line != "":    
+                    if line != None and line != "" and not line.startswith("device_id"):
                         vehicle, municipality = self.convert_to_vehicle(line)
+                        vehicle.provider_id = provider_id
 
                         if municipality not in new_vehicles:
                             new_vehicles[municipality] = Vehicles(version="2.0", vehicles=list())
@@ -36,22 +39,13 @@ class VehicleImportController():
             raise e
 
     def convert_to_vehicle(self,line):
-        # 004c9d6f-7523-461a-b6e7-946dbf13fda6;dadcd6bf-3ab5-4c2d-8609-23a92f1a4672;TXXT95;car;combustion;280000;0;130;markelo
+        # device_id;vehicle_type;propulsion_type;municipality
         parts = line.split(';')
 
         vehicle = Vehicle()
         vehicle.device_id = parts[0] 
-        vehicle.provider_id = parts[1]
-        vehicle.vehicle_id = parts[2]
-        vehicle.vehicle_type = parts[3]
-        vehicle.propulsion_types = parts[4].split(',')
+        vehicle.vehicle_id = parts[0]
+        vehicle.vehicle_type = parts[1]
+        vehicle.propulsion_types = parts[2].split(',')
         
-        if int(parts[5]) > 0:
-            vehicle.battery_capacity = int(parts[5])
-        if int(parts[6]) > 0:
-            vehicle.fuel_capacity = parts[6]
-        if int(parts[7]) > 0:
-            vehicle.maximum_speed = parts[7]
-        
-        return vehicle, parts[8].strip()
-    
+        return vehicle, parts[3].strip()
