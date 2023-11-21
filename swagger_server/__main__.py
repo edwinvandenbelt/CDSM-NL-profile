@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
-
 import connexion
 import flask
 from flask import request
+from waitress import serve
 
 from swagger_server import encoder
 from admin.import_controller import ImportController
@@ -36,8 +35,7 @@ def main():
         
     IMPORT_CONTROLLER.import_all()
     
-    app.run(port=8080)
+    serve(app, port=8080)
 
 if __name__ == '__main__':
     main()
-
