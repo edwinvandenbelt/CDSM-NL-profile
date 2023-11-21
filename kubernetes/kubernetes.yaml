@@ -1,0 +1,50 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nl-profiel-cds-m
+spec:
+  selector:
+    matchLabels:
+      app: nl-profiel-cds-m
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nl-profiel-cds-m
+    spec:
+      containers:
+      - name: swagger-server
+        image: edwinvandenbelt/nl_profiel_cds_m:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "1000Mi"
+            cpu: "100m"
+          limits:
+            memory: "1000Mi"
+            cpu: "100m"
+        volumeMounts:
+        - name: config
+          mountPath: /usr/src/app
+      volumes:
+      - name: config
+        hostPath:
+          path: "/host_mnt/c/tmp"
+
+# == SERVICES ==
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nl-profiel-cds-m-service
+spec:
+  selector:
+    app: nl-profiel-cds-m
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
