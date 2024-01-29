@@ -22,6 +22,13 @@ def check_bearer(token):
 
     allowed_tokens = config.read_config_value("allowed_tokens")
     if name in allowed_tokens:
+
+        # if blocked tokens are applicable
+        blocked_tokens = config.read_config_value('blocked_tokens')
+        if blocked_tokens != None:
+            if 'id' not in decrypted_token or decrypted_token['id'] in blocked_tokens:
+                abort(401)
+
         return { "municipality" : name }
 
     abort(401)
